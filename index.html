@@ -1,22 +1,251 @@
-<!doctype html>
-<html class="no-js" lang="">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
-        
-        <link rel="stylesheet" href="css/styles.css">
-        <script src="js/modernizr-2.8.3.min.js"></script>
-    </head>
-    <body>
-        <p>Test</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti Camo - Mod Downloads</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #2c0b3f;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            color: #b388ff;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 10px;
+        }
+        .sidebar ul li a {
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .sidebar ul li a:hover {
+            color: #b388ff;
+        }
+        .mod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .mod-card {
+            background-color: #2a2a2a;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .mod-card .preview-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            margin-bottom: 10px;
+        }
+        .mod-card .preview-container img,
+        .mod-card .preview-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .mod-card h3 {
+            color: #b388ff;
+            margin-top: 0;
+        }
+        .mod-card .download-button {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #6a1b9a;
+            color: #e0e0e0;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .mod-card .download-button:hover {
+            background-color: #8e24aa;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            background-color: #2a2a2a;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 800px;
+            width: 90%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #fff;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Categories</h2>
+            <ul>
+                <li><a href="#" onclick="filterMods('all')">All Mods</a></li>
+                <li><a href="#" onclick="filterMods('gameplay')">Gameplay</a></li>
+                <li><a href="#" onclick="filterMods('other')">Other</a></li>
+            </ul>
+        </div>
+        <div class="content">
+            <h1>Mods</h1>
+            <div id="mod-grid" class="mod-grid">
+            </div>
+        </div>
+    </div>
 
+    <div id="modModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/jquery-{{JQUERY_VERSION}}.min.js"><\/script>')</script>
-        <script src="js/script.js"></script>
-    </body>
+    <script>
+        const mods = [
+            {
+                id: 'btd-mod-helper',
+                name: 'BTD Mod Helper',
+                category: 'other',
+                preview: {
+                    type: 'image',
+                    src: 'assets/btd-mod-helper.png'
+                },
+                downloadLink: 'https://gurrenm3.github.io/BTD-Mod-Helper',
+                installVideoId: 'MgWfxuer9q0'
+            },
+            {
+                id: 'mod2',
+                name: 'Awesome Mod 2',
+                category: 'gameplay',
+                preview: {
+                    type: 'video',
+                    src: 'MgWfxuer9q0'
+                },
+                downloadLink: '#',
+                installVideoId: 'MgWfxuer9q0'
+            },
+        ];
+
+        function createModCard(mod) {
+            const previewElement = mod.preview.type === 'video' 
+                ? `<video src="${mod.preview.src}" muted loop></video>`
+                : `<img src="${mod.preview.src}" alt="${mod.name} preview">`;
+
+            return `
+                <div class="mod-card" data-category="${mod.category}">
+                    <div class="preview-container">
+                        ${previewElement}
+                    </div>
+                    <h3>${mod.name}</h3>
+                    <a href="#" class="download-button" onclick="openModal('${mod.id}')">View Details</a>
+                </div>
+            `;
+        }
+
+        function populateModGrid() {
+            const modGrid = document.getElementById('mod-grid');
+            modGrid.innerHTML = mods.map(createModCard).join('');
+
+            document.querySelectorAll('.mod-card video').forEach(video => {
+                video.addEventListener('mouseenter', () => video.play());
+                video.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                });
+            });
+        }
+
+        function filterMods(category) {
+            const modCards = document.querySelectorAll('.mod-card');
+            modCards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function openModal(modId) {
+            const mod = mods.find(m => m.id === modId);
+            const modal = document.getElementById('modModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2>${mod.name}</h2>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/${mod.installVideoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+                <a href="${mod.downloadLink}" class="download-button">Download Mod</a>
+            `;
+            modal.style.display = 'block';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modModal');
+            if (event.target == modal || event.target.className == 'close') {
+                modal.style.display = 'none';
+            }
+        }
+
+        populateModGrid();
+    </script>
+</body>
 </html>
